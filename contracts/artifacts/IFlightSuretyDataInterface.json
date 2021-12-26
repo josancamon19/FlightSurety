@@ -1,0 +1,377 @@
+{
+	"deploy": {
+		"VM:-": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"main:1": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"ropsten:3": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"rinkeby:4": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"kovan:42": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"görli:5": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"Custom": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		}
+	},
+	"data": {
+		"bytecode": {
+			"functionDebugData": {},
+			"generatedSources": [],
+			"linkReferences": {},
+			"object": "",
+			"opcodes": "",
+			"sourceMap": ""
+		},
+		"deployedBytecode": {
+			"functionDebugData": {},
+			"generatedSources": [],
+			"immutableReferences": {},
+			"linkReferences": {},
+			"object": "",
+			"opcodes": "",
+			"sourceMap": ""
+		},
+		"gasEstimates": null,
+		"methodIdentifiers": {
+			"addAirline(address)": "3a0295d1",
+			"addAirlineApprover(address,address)": "cf648633",
+			"buyInsurance(address,bytes32)": "adf8ae7a",
+			"cleanFlightInsurances(address,address,bytes32)": "8b4ca9cc",
+			"cleanInsuredPassengersForFlight(bytes32)": "2c9fd243",
+			"creditInsurees(address)": "4a830a92",
+			"getAirlineApproversCount(address)": "6e0549b1",
+			"getAirlinesCount()": "05e931f4",
+			"getPassengerInsurance(address,bytes32)": "f505d273",
+			"getPassengersInsuredForFlight(bytes32)": "954afc8f",
+			"insurePassengerFlight(address,address,bytes32,uint256)": "c3896748",
+			"isFlightRegistered(bytes32)": "58ac36a3",
+			"registerAirline(address,address)": "c7ba5018",
+			"registerFlight(address,string,uint8,uint256)": "089f4e08",
+			"setFlightStatusCode(address,string,uint8,uint256)": "4403d990"
+		}
+	},
+	"abi": [
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "airline",
+					"type": "address"
+				}
+			],
+			"name": "addAirline",
+			"outputs": [
+				{
+					"internalType": "bool",
+					"name": "",
+					"type": "bool"
+				}
+			],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "airline",
+					"type": "address"
+				},
+				{
+					"internalType": "address",
+					"name": "approver",
+					"type": "address"
+				}
+			],
+			"name": "addAirlineApprover",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "passenger",
+					"type": "address"
+				},
+				{
+					"internalType": "bytes32",
+					"name": "flightKey",
+					"type": "bytes32"
+				}
+			],
+			"name": "buyInsurance",
+			"outputs": [],
+			"stateMutability": "payable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "passenger",
+					"type": "address"
+				},
+				{
+					"internalType": "address",
+					"name": "airline",
+					"type": "address"
+				},
+				{
+					"internalType": "bytes32",
+					"name": "flightKey",
+					"type": "bytes32"
+				}
+			],
+			"name": "cleanFlightInsurances",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "bytes32",
+					"name": "flightKey",
+					"type": "bytes32"
+				}
+			],
+			"name": "cleanInsuredPassengersForFlight",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "airline",
+					"type": "address"
+				}
+			],
+			"name": "creditInsurees",
+			"outputs": [],
+			"stateMutability": "payable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "airline",
+					"type": "address"
+				}
+			],
+			"name": "getAirlineApproversCount",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"name": "getAirlinesCount",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "passenger",
+					"type": "address"
+				},
+				{
+					"internalType": "bytes32",
+					"name": "flightKey",
+					"type": "bytes32"
+				}
+			],
+			"name": "getPassengerInsurance",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "bytes32",
+					"name": "flightKey",
+					"type": "bytes32"
+				}
+			],
+			"name": "getPassengersInsuredForFlight",
+			"outputs": [
+				{
+					"internalType": "address[]",
+					"name": "",
+					"type": "address[]"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "passenger",
+					"type": "address"
+				},
+				{
+					"internalType": "address",
+					"name": "airline",
+					"type": "address"
+				},
+				{
+					"internalType": "bytes32",
+					"name": "flightKey",
+					"type": "bytes32"
+				},
+				{
+					"internalType": "uint256",
+					"name": "amountToPayout",
+					"type": "uint256"
+				}
+			],
+			"name": "insurePassengerFlight",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "bytes32",
+					"name": "flightKey",
+					"type": "bytes32"
+				}
+			],
+			"name": "isFlightRegistered",
+			"outputs": [
+				{
+					"internalType": "bool",
+					"name": "",
+					"type": "bool"
+				}
+			],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "sender",
+					"type": "address"
+				},
+				{
+					"internalType": "address",
+					"name": "newAirline",
+					"type": "address"
+				}
+			],
+			"name": "registerAirline",
+			"outputs": [
+				{
+					"internalType": "bool",
+					"name": "",
+					"type": "bool"
+				}
+			],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "airline",
+					"type": "address"
+				},
+				{
+					"internalType": "string",
+					"name": "flight",
+					"type": "string"
+				},
+				{
+					"internalType": "uint8",
+					"name": "statusCode",
+					"type": "uint8"
+				},
+				{
+					"internalType": "uint256",
+					"name": "timestamp",
+					"type": "uint256"
+				}
+			],
+			"name": "registerFlight",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "airline",
+					"type": "address"
+				},
+				{
+					"internalType": "string",
+					"name": "flight",
+					"type": "string"
+				},
+				{
+					"internalType": "uint8",
+					"name": "newStatusCode",
+					"type": "uint8"
+				},
+				{
+					"internalType": "uint256",
+					"name": "timestamp",
+					"type": "uint256"
+				}
+			],
+			"name": "setFlightStatusCode",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		}
+	]
+}
