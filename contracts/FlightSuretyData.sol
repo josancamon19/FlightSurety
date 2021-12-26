@@ -12,6 +12,8 @@ contract FlightSuretyData is Ownable, Pausable {
     /*                                       DATA VARIABLES                                     */
     /********************************************************************************************/
 
+    mapping(address => uint256) private authorizedContracts;
+
     struct Flight {
         bool isRegistered;
         uint8 statusCode;
@@ -27,10 +29,6 @@ contract FlightSuretyData is Ownable, Pausable {
         PARTICIPATING
     }
 
-    // what if insurance is instead
-    // flightKey => {passenger => amount}
-
-    // passenger => (flightKey => insuredAmount)
     mapping(bytes32 => mapping(address => uint256)) passengersInsurances;
     mapping(bytes32 => address[]) insuredFlights;
 
@@ -45,17 +43,52 @@ contract FlightSuretyData is Ownable, Pausable {
     /********************************************************************************************/
     /*                                       EVENT DEFINITIONS                                  */
     /********************************************************************************************/
+
+    /**
+     ********** Airlines registration **********
+     */
     event NewAirlineStatus(address airline, AirlineStatus status);
-    event InsuredFlight(address passenger, uint256 insuredAmount);
-    event InsureePayout(
-        address passenger,
-        string flightKey,
-        uint256 payoutAmount
+
+    /**
+     ********** Flights registration **********
+     */
+    event NewFlightRegistered(address airline, bytes32 flightKey);
+    event FlightStatusCodeFound(
+        address airline,
+        bytes32 flightKey,
+        uint256 statusCode
     );
+
+    /**
+     ********** Insurances operations **********
+     */
+
+    event NewInsuredFlight(
+        address passenger,
+        bytes32 flightKey,
+        uint256 insuredAmount
+    );
+
+    event AirlineFlightArrivedOnTime(address airline, bytes32 flightKey);
+
+    event AirlinePaysInsurance(
+        address airline,
+        address passenger,
+        bytes32 flight,
+        uint256 amount
+    );
+    event PassengerGetsInsuredMoney(address passenger, uint256 amount);
 
     /********************************************************************************************/
     /*                                       FUNCTION MODIFIERS                                 */
     /********************************************************************************************/
+    modifier isCallerAuthorized() {
+        require(
+            authorizedContracts[msg.sender] == 1,
+            "Caller is not contract owner"
+        );
+        _;
+    }
 
     modifier isAirline(address airline) {
         if (airlinesCount != 0) {
@@ -95,6 +128,17 @@ contract FlightSuretyData is Ownable, Pausable {
     /********************************************************************************************/
 
     /**
+     ********** Callers authorization **********
+     */
+    function authorizeContract(address contractAddress) external onlyOwner {
+        authorizedContracts[contractAddress] = 1;
+    }
+
+    function deauthorizeContract(address contractAddress) external onlyOwner {
+        delete authorizedContracts[contractAddress];
+    }
+
+    /**
      ********** Airlines registration **********
      */
 
@@ -108,6 +152,7 @@ contract FlightSuretyData is Ownable, Pausable {
 
     function registerAirline(address sender, address newAirline)
         external
+        isCallerAuthorized
         isAirline(sender)
         returns (bool)
     {
@@ -133,22 +178,34 @@ contract FlightSuretyData is Ownable, Pausable {
 
     function addAirlineApprover(address airline, address approver)
         external
+        isCallerAuthorized
         isAirline(approver)
     {
         approvals[airline].push(approver);
+
+        if (approvals[airline].length == 1) {
+            emit NewAirlineStatus(airline, AirlineStatus.NOT_APPROVED);
+        }
     }
 
     /**
      ********** Airlines funds **********
      */
 
-    function getAirlineFunds(address airline) external view returns (uint256) {
+    function getAirlineFunds(address airline)
+        external
+        view
+        isCallerAuthorized
+        returns (uint256)
+    {
         return airlinesFunds[airline];
     }
 
     function depositFundsToAirline(address airline)
         external
         payable
+        isCallerAuthorized
+        isAirline(airline)
         returns (uint256)
     {
         airlinesFunds[airline] += msg.value;
@@ -157,6 +214,7 @@ contract FlightSuretyData is Ownable, Pausable {
 
     function setAirlineAsParticipant(address airline)
         external
+        isCallerAuthorized
         isAirline(airline)
     {
         airlines[airline] = AirlineStatus.PARTICIPATING;
@@ -180,9 +238,11 @@ contract FlightSuretyData is Ownable, Pausable {
         string memory flight,
         uint8 statusCode,
         uint256 timestamp
-    ) external isAirlineParticipating(airline) {
+    ) external isCallerAuthorized isAirlineParticipating(airline) {
         bytes32 flightKey = getFlightKey(airline, flight, timestamp);
         flights[flightKey] = Flight(true, statusCode, timestamp, airline);
+
+        emit NewFlightRegistered(airline, flightKey);
     }
 
     function setFlightStatusCode(
@@ -190,9 +250,11 @@ contract FlightSuretyData is Ownable, Pausable {
         string memory flight,
         uint8 newStatusCode,
         uint256 timestamp
-    ) external {
+    ) external isCallerAuthorized {
         bytes32 flightKey = getFlightKey(airline, flight, timestamp);
         flights[flightKey].statusCode = newStatusCode;
+
+        emit FlightStatusCodeFound(airline, flightKey, newStatusCode);
     }
 
     /**
@@ -200,25 +262,42 @@ contract FlightSuretyData is Ownable, Pausable {
      */
 
     function getPassengersInsuredForFlight(bytes32 flightKey)
-        external
+        public
         view
+        isCallerAuthorized
+        flightExists(flightKey)
         returns (address[] memory)
     {
         return insuredFlights[flightKey];
     }
 
-    function cleanAllInsuredPassengersForFlight(bytes32 flightKey) external {
+    function cleanAllInsuredPassengersForFlight(bytes32 flightKey)
+        external
+        isCallerAuthorized
+    {
         delete insuredFlights[flightKey];
     }
 
-    function cleanPassengerInsuranceForFlight(
-        address passenger,
+    function transferToAirlinePassengersInsuredFundsForFlight(
         address airline,
         bytes32 flightKey
-    ) external {
-        uint256 amountInsured = passengersInsurances[flightKey][passenger];
-        passengersInsurances[flightKey][passenger] = 0;
-        airlinesFunds[airline] -= amountInsured;
+    )
+        external
+        isCallerAuthorized
+        isAirlineParticipating(airline)
+        flightExists(flightKey)
+    {
+        address[] memory passengers = getPassengersInsuredForFlight(flightKey);
+
+        for (uint256 i = 0; i < passengers.length; i++) {
+            uint256 amountInsured = passengersInsurances[flightKey][
+                passengers[i]
+            ];
+            delete passengersInsurances[flightKey][passengers[i]];
+            airlinesFunds[airline] += amountInsured;
+        }
+
+        emit AirlineFlightArrivedOnTime(airline, flightKey);
     }
 
     function buyInsuranceForFlight(address passenger, bytes32 flightKey)
@@ -228,14 +307,20 @@ contract FlightSuretyData is Ownable, Pausable {
     {
         passengersInsurances[flightKey][passenger] = msg.value;
         insuredFlights[flightKey].push(passenger);
-        emit InsuredFlight(passenger, msg.value);
+
+        emit NewInsuredFlight(passenger, flightKey, msg.value);
     }
 
-    function passengerClaimsInsuredMoney(address passenger) external {
+    function passengerClaimsInsuredMoney(address passenger)
+        external
+        isCallerAuthorized
+    {
         uint256 amount = passengersFunds[passenger];
+        require(amount > 0, "You have no funds to claim.");
         passengersFunds[passenger] = 0;
-
         payable(passenger).transfer(amount);
+
+        emit PassengerGetsInsuredMoney(passenger, amount);
     }
 
     function getPassengerInsuranceForFlight(
@@ -250,13 +335,23 @@ contract FlightSuretyData is Ownable, Pausable {
         address airline,
         bytes32 flightKey,
         uint256 amountToPayout
-    ) external flightExists(flightKey) flightInsured(passenger, flightKey) {
+    )
+        external
+        isCallerAuthorized
+        flightExists(flightKey)
+        flightInsured(passenger, flightKey)
+    {
         passengersInsurances[flightKey][passenger] = 0;
-
-        insuredFlights[flightKey];
 
         airlinesFunds[airline] -= amountToPayout;
         passengersFunds[passenger] += amountToPayout;
+
+        emit AirlinePaysInsurance(
+            airline,
+            passenger,
+            flightKey,
+            amountToPayout
+        );
     }
 
     /**
@@ -267,7 +362,7 @@ contract FlightSuretyData is Ownable, Pausable {
         address airline,
         string memory flight,
         uint256 timestamp
-    ) public pure returns (bytes32) {
+    ) private pure returns (bytes32) {
         return keccak256(abi.encodePacked(airline, flight, timestamp));
     }
 }

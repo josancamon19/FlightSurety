@@ -49,43 +49,27 @@
 		},
 		"gasEstimates": null,
 		"methodIdentifiers": {
-			"addAirline(address)": "3a0295d1",
 			"addAirlineApprover(address,address)": "cf648633",
-			"buyInsurance(address,bytes32)": "adf8ae7a",
-			"cleanFlightInsurances(address,address,bytes32)": "8b4ca9cc",
-			"cleanInsuredPassengersForFlight(bytes32)": "2c9fd243",
-			"creditInsurees(address)": "4a830a92",
+			"buyInsuranceForFlight(address,bytes32)": "8b955b59",
+			"cleanAllInsuredPassengersForFlight(bytes32)": "64ff6a5d",
+			"depositFundsToAirline(address)": "f8554cb8",
 			"getAirlineApproversCount(address)": "6e0549b1",
+			"getAirlineFunds(address)": "9e4a8f8f",
+			"getAirlineStatus(address)": "57721fee",
 			"getAirlinesCount()": "05e931f4",
-			"getPassengerInsurance(address,bytes32)": "f505d273",
+			"getPassengerInsuranceForFlight(address,bytes32)": "526a4631",
 			"getPassengersInsuredForFlight(bytes32)": "954afc8f",
-			"insurePassengerFlight(address,address,bytes32,uint256)": "c3896748",
 			"isFlightRegistered(bytes32)": "58ac36a3",
+			"passengerClaimsInsuredMoney(address)": "12f93d8a",
+			"payPassengerInsuranceForFlight(address,address,bytes32,uint256)": "c64a8963",
 			"registerAirline(address,address)": "c7ba5018",
 			"registerFlight(address,string,uint8,uint256)": "089f4e08",
-			"setFlightStatusCode(address,string,uint8,uint256)": "4403d990"
+			"setAirlineAsParticipant(address)": "7ec83feb",
+			"setFlightStatusCode(address,string,uint8,uint256)": "4403d990",
+			"transferToAirlinePassengersInsuredFundsForFlight(address,bytes32)": "24ccb46d"
 		}
 	},
 	"abi": [
-		{
-			"inputs": [
-				{
-					"internalType": "address",
-					"name": "airline",
-					"type": "address"
-				}
-			],
-			"name": "addAirline",
-			"outputs": [
-				{
-					"internalType": "bool",
-					"name": "",
-					"type": "bool"
-				}
-			],
-			"stateMutability": "nonpayable",
-			"type": "function"
-		},
 		{
 			"inputs": [
 				{
@@ -117,7 +101,7 @@
 					"type": "bytes32"
 				}
 			],
-			"name": "buyInsurance",
+			"name": "buyInsuranceForFlight",
 			"outputs": [],
 			"stateMutability": "payable",
 			"type": "function"
@@ -125,35 +109,12 @@
 		{
 			"inputs": [
 				{
-					"internalType": "address",
-					"name": "passenger",
-					"type": "address"
-				},
-				{
-					"internalType": "address",
-					"name": "airline",
-					"type": "address"
-				},
-				{
 					"internalType": "bytes32",
 					"name": "flightKey",
 					"type": "bytes32"
 				}
 			],
-			"name": "cleanFlightInsurances",
-			"outputs": [],
-			"stateMutability": "nonpayable",
-			"type": "function"
-		},
-		{
-			"inputs": [
-				{
-					"internalType": "bytes32",
-					"name": "flightKey",
-					"type": "bytes32"
-				}
-			],
-			"name": "cleanInsuredPassengersForFlight",
+			"name": "cleanAllInsuredPassengersForFlight",
 			"outputs": [],
 			"stateMutability": "nonpayable",
 			"type": "function"
@@ -166,8 +127,14 @@
 					"type": "address"
 				}
 			],
-			"name": "creditInsurees",
-			"outputs": [],
+			"name": "depositFundsToAirline",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
 			"stateMutability": "payable",
 			"type": "function"
 		},
@@ -185,6 +152,44 @@
 					"internalType": "uint256",
 					"name": "",
 					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "airline",
+					"type": "address"
+				}
+			],
+			"name": "getAirlineFunds",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "airline",
+					"type": "address"
+				}
+			],
+			"name": "getAirlineStatus",
+			"outputs": [
+				{
+					"internalType": "uint8",
+					"name": "",
+					"type": "uint8"
 				}
 			],
 			"stateMutability": "view",
@@ -216,7 +221,7 @@
 					"type": "bytes32"
 				}
 			],
-			"name": "getPassengerInsurance",
+			"name": "getPassengerInsuranceForFlight",
 			"outputs": [
 				{
 					"internalType": "uint256",
@@ -249,6 +254,38 @@
 		{
 			"inputs": [
 				{
+					"internalType": "bytes32",
+					"name": "flightKey",
+					"type": "bytes32"
+				}
+			],
+			"name": "isFlightRegistered",
+			"outputs": [
+				{
+					"internalType": "bool",
+					"name": "",
+					"type": "bool"
+				}
+			],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "passenger",
+					"type": "address"
+				}
+			],
+			"name": "passengerClaimsInsuredMoney",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
 					"internalType": "address",
 					"name": "passenger",
 					"type": "address"
@@ -269,27 +306,8 @@
 					"type": "uint256"
 				}
 			],
-			"name": "insurePassengerFlight",
+			"name": "payPassengerInsuranceForFlight",
 			"outputs": [],
-			"stateMutability": "nonpayable",
-			"type": "function"
-		},
-		{
-			"inputs": [
-				{
-					"internalType": "bytes32",
-					"name": "flightKey",
-					"type": "bytes32"
-				}
-			],
-			"name": "isFlightRegistered",
-			"outputs": [
-				{
-					"internalType": "bool",
-					"name": "",
-					"type": "bool"
-				}
-			],
 			"stateMutability": "nonpayable",
 			"type": "function"
 		},
@@ -351,6 +369,19 @@
 					"internalType": "address",
 					"name": "airline",
 					"type": "address"
+				}
+			],
+			"name": "setAirlineAsParticipant",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "airline",
+					"type": "address"
 				},
 				{
 					"internalType": "string",
@@ -369,6 +400,24 @@
 				}
 			],
 			"name": "setFlightStatusCode",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "airline",
+					"type": "address"
+				},
+				{
+					"internalType": "bytes32",
+					"name": "flightKey",
+					"type": "bytes32"
+				}
+			],
+			"name": "transferToAirlinePassengersInsuredFundsForFlight",
 			"outputs": [],
 			"stateMutability": "nonpayable",
 			"type": "function"

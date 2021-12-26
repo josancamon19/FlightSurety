@@ -6,6 +6,114 @@
 	"output": {
 		"abi": [
 			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "passenger",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "insuredAmount",
+						"type": "uint256"
+					}
+				],
+				"name": "InsuredFlight",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "passenger",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "flightKey",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "payoutAmount",
+						"type": "uint256"
+					}
+				],
+				"name": "InsureePayout",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "airline",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "enum FlightSuretyData.AirlineStatus",
+						"name": "status",
+						"type": "uint8"
+					}
+				],
+				"name": "NewAirlineStatus",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "previousOwner",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "newOwner",
+						"type": "address"
+					}
+				],
+				"name": "OwnershipTransferred",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "account",
+						"type": "address"
+					}
+				],
+				"name": "Paused",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "account",
+						"type": "address"
+					}
+				],
+				"name": "Unpaused",
+				"type": "event"
+			},
+			{
 				"inputs": [
 					{
 						"internalType": "address",
@@ -147,6 +255,35 @@
 				"inputs": [
 					{
 						"internalType": "address",
+						"name": "airline",
+						"type": "address"
+					},
+					{
+						"internalType": "string",
+						"name": "flight",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "timestamp",
+						"type": "uint256"
+					}
+				],
+				"name": "getFlightKey",
+				"outputs": [
+					{
+						"internalType": "bytes32",
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"stateMutability": "pure",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
 						"name": "passenger",
 						"type": "address"
 					},
@@ -202,7 +339,20 @@
 						"type": "bool"
 					}
 				],
-				"stateMutability": "nonpayable",
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "owner",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
 				"type": "function"
 			},
 			{
@@ -216,6 +366,19 @@
 				"name": "passengerClaimsInsuredMoney",
 				"outputs": [],
 				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "paused",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
 				"type": "function"
 			},
 			{
@@ -299,6 +462,13 @@
 				"type": "function"
 			},
 			{
+				"inputs": [],
+				"name": "renounceOwnership",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
 				"inputs": [
 					{
 						"internalType": "address",
@@ -343,6 +513,19 @@
 				"inputs": [
 					{
 						"internalType": "address",
+						"name": "newOwner",
+						"type": "address"
+					}
+				],
+				"name": "transferOwnership",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
 						"name": "airline",
 						"type": "address"
 					},
@@ -360,7 +543,20 @@
 		],
 		"devdoc": {
 			"kind": "dev",
-			"methods": {},
+			"methods": {
+				"owner()": {
+					"details": "Returns the address of the current owner."
+				},
+				"paused()": {
+					"details": "Returns true if the contract is paused, and false otherwise."
+				},
+				"renounceOwnership()": {
+					"details": "Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner."
+				},
+				"transferOwnership(address)": {
+					"details": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner."
+				}
+			},
 			"version": 1
 		},
 		"userdoc": {
@@ -371,6 +567,9 @@
 				},
 				"getAirlinesCount()": {
 					"notice": "********** Airlines registration **********"
+				},
+				"getFlightKey(address,string,uint256)": {
+					"notice": "********** Utilities **********"
 				},
 				"getPassengersInsuredForFlight(bytes32)": {
 					"notice": "********** Passengers operations **********"
@@ -384,7 +583,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"contracts/FlightSuretyApp.sol": "IFlightSuretyDataInterface"
+			"contracts/FlightSuretyData.sol": "FlightSuretyData"
 		},
 		"evmVersion": "berlin",
 		"libraries": {},
@@ -406,6 +605,14 @@
 				"dweb:/ipfs/QmXRoFGUgfsaRkoPT5bxNMtSayKTQ8GZATLPXf69HcRA51"
 			]
 		},
+		"@openzeppelin/contracts/security/Pausable.sol": {
+			"keccak256": "0xe68ed7fb8766ed1e888291f881e36b616037f852b37d96877045319ad298ba87",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://1d491a2ca79dbf44bc02e876e21a5847a2cbcc011188532ad8662cdc1c134a4e",
+				"dweb:/ipfs/QmUQXhSV8ZvHLzfdG89ZNSh1nLrAYyjnNBLznJGwGcwVk8"
+			]
+		},
 		"@openzeppelin/contracts/utils/Context.sol": {
 			"keccak256": "0xe2e337e6dde9ef6b680e07338c493ebea1b5fd09b43424112868e9cc1706bca7",
 			"license": "MIT",
@@ -422,12 +629,12 @@
 				"dweb:/ipfs/QmfYuZxRfx2J2xdk4EXN7jKg4bUYEMTaYk9BAw9Bqn4o2Y"
 			]
 		},
-		"contracts/FlightSuretyApp.sol": {
-			"keccak256": "0x58bc66eab675d1331c5aa003d3daeced98ac0dbd83aaf9dc87503b5f665bf1af",
+		"contracts/FlightSuretyData.sol": {
+			"keccak256": "0x40b4ebe7aa7ec2c9d59fa538e9a8aea80c7b5582b7e0f55b08c69300570404f7",
 			"license": "UNLICENSED",
 			"urls": [
-				"bzz-raw://9bf2edf252ac1bb9e50a7c013582139e63ebe5663838735a8e539537ad757037",
-				"dweb:/ipfs/QmW3niB5RXgUXpyb4kzHAF6szpSczVheTFcE6qsK5L9Dma"
+				"bzz-raw://84e7b34a1730a99b6b1370d4e19b9664196e8646a5b84b7d67a171ce1992bd99",
+				"dweb:/ipfs/QmcBghN9XvuLxz69uHWYdPdRd6zhiyGFS2GQgk4cFJybd4"
 			]
 		}
 	},

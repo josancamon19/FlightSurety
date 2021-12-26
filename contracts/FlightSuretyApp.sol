@@ -104,7 +104,8 @@ contract FlightSuretyApp is Ownable {
         string memory flight,
         uint256 timestamp,
         uint8 statusCode
-    ) public {
+    ) internal {
+        // TODO: make it private
         // oracles consensus was done from where this is being called.
         dataContract.setFlightStatusCode(
             airline,
@@ -112,8 +113,8 @@ contract FlightSuretyApp is Ownable {
             statusCode,
             timestamp
         );
-        // Expired? flight done -> clear out
         bytes32 flightKey = getFlightKey(airline, flight, timestamp);
+
         if (statusCode == STATUS_CODE_LATE_AIRLINE) {
             address[] memory passengers = dataContract
                 .getPassengersInsuredForFlight(flightKey);
@@ -123,10 +124,12 @@ contract FlightSuretyApp is Ownable {
             dataContract.cleanAllInsuredPassengersForFlight(flightKey);
         } else {
             if (block.timestamp >= timestamp) {
-                // Airline "wins" only if flight is 100% ready.
-                // TODO user insurance done (clean fields)
-                // - clean passengersInsurances
-                // - update airlinesFunds += user amountInsured
+                dataContract.transferToAirlinePassengersInsuredFundsForFlight(
+                    airline,
+                    flightKey
+                );
+
+                dataContract.cleanAllInsuredPassengersForFlight(flightKey);
             }
         }
     }
@@ -141,6 +144,15 @@ contract FlightSuretyApp is Ownable {
             "Amount sent is invalid (has to be > 0 and <= 1 ether)."
         );
         bytes32 flightKey = getFlightKey(airline, flight, timestamp);
+
+        require(
+            dataContract.getPassengerInsuranceForFlight(
+                msg.sender,
+                flightKey
+            ) == 0,
+            "You already have an insurance for the flight."
+        );
+
         dataContract.buyInsuranceForFlight{value: msg.value}(
             msg.sender,
             flightKey
@@ -163,6 +175,10 @@ contract FlightSuretyApp is Ownable {
             flightKey,
             amountToPayout
         );
+    }
+
+    function passengerClaimsInsuredMoney(address passenger) external {
+        dataContract.passengerClaimsInsuredMoney(passenger);
     }
 
     /********************************************************************************************/
@@ -420,8 +436,7 @@ interface IFlightSuretyDataInterface {
 
     function cleanAllInsuredPassengersForFlight(bytes32 flightKey) external;
 
-    function cleanPassengerInsuranceForFlight(
-        address passenger,
+    function transferToAirlinePassengersInsuredFundsForFlight(
         address airline,
         bytes32 flightKey
     ) external;
