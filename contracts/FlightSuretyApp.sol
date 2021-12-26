@@ -143,6 +143,7 @@ contract FlightSuretyApp is Ownable {
             msg.value > 0 && msg.value <= 1 ether,
             "Amount sent is invalid (has to be > 0 and <= 1 ether)."
         );
+
         bytes32 flightKey = getFlightKey(airline, flight, timestamp);
 
         require(

@@ -258,34 +258,6 @@
 						"internalType": "address",
 						"name": "airline",
 						"type": "address"
-					},
-					{
-						"internalType": "string",
-						"name": "flight",
-						"type": "string"
-					},
-					{
-						"internalType": "uint256",
-						"name": "timestamp",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint8",
-						"name": "statusCode",
-						"type": "uint8"
-					}
-				],
-				"name": "processFlightStatus",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "airline",
-						"type": "address"
 					}
 				],
 				"name": "registerAirline",
@@ -443,11 +415,11 @@
 			]
 		},
 		"contracts/FlightSuretyApp.sol": {
-			"keccak256": "0x58bc66eab675d1331c5aa003d3daeced98ac0dbd83aaf9dc87503b5f665bf1af",
+			"keccak256": "0xfb5ba05597621ec200e241ec226e7b2a304e56612ded4dfb067c23cc31f83d48",
 			"license": "UNLICENSED",
 			"urls": [
-				"bzz-raw://9bf2edf252ac1bb9e50a7c013582139e63ebe5663838735a8e539537ad757037",
-				"dweb:/ipfs/QmW3niB5RXgUXpyb4kzHAF6szpSczVheTFcE6qsK5L9Dma"
+				"bzz-raw://23105395ce047791f1047ce50f87e39d70425616f8ec722248fda7e50a459a1b",
+				"dweb:/ipfs/QmWKXcpLk3ySKwusbvsPW7if88AMav2XHaXFYfYowtrEX3"
 			]
 		}
 	},

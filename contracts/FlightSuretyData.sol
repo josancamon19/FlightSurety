@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
+import "./Pausable.sol";
 
 contract FlightSuretyData is Ownable, Pausable {
     using SafeMath for uint256;
@@ -152,6 +152,7 @@ contract FlightSuretyData is Ownable, Pausable {
 
     function registerAirline(address sender, address newAirline)
         external
+        whenNotPaused
         isCallerAuthorized
         isAirline(sender)
         returns (bool)
@@ -178,6 +179,7 @@ contract FlightSuretyData is Ownable, Pausable {
 
     function addAirlineApprover(address airline, address approver)
         external
+        whenNotPaused
         isCallerAuthorized
         isAirline(approver)
     {
@@ -204,6 +206,7 @@ contract FlightSuretyData is Ownable, Pausable {
     function depositFundsToAirline(address airline)
         external
         payable
+        whenNotPaused
         isCallerAuthorized
         isAirline(airline)
         returns (uint256)
@@ -214,6 +217,7 @@ contract FlightSuretyData is Ownable, Pausable {
 
     function setAirlineAsParticipant(address airline)
         external
+        whenNotPaused
         isCallerAuthorized
         isAirline(airline)
     {
@@ -238,7 +242,12 @@ contract FlightSuretyData is Ownable, Pausable {
         string memory flight,
         uint8 statusCode,
         uint256 timestamp
-    ) external isCallerAuthorized isAirlineParticipating(airline) {
+    )
+        external
+        whenNotPaused
+        isCallerAuthorized
+        isAirlineParticipating(airline)
+    {
         bytes32 flightKey = getFlightKey(airline, flight, timestamp);
         flights[flightKey] = Flight(true, statusCode, timestamp, airline);
 
@@ -250,7 +259,7 @@ contract FlightSuretyData is Ownable, Pausable {
         string memory flight,
         uint8 newStatusCode,
         uint256 timestamp
-    ) external isCallerAuthorized {
+    ) external whenNotPaused isCallerAuthorized {
         bytes32 flightKey = getFlightKey(airline, flight, timestamp);
         flights[flightKey].statusCode = newStatusCode;
 
@@ -273,6 +282,7 @@ contract FlightSuretyData is Ownable, Pausable {
 
     function cleanAllInsuredPassengersForFlight(bytes32 flightKey)
         external
+        whenNotPaused
         isCallerAuthorized
     {
         delete insuredFlights[flightKey];
@@ -283,6 +293,7 @@ contract FlightSuretyData is Ownable, Pausable {
         bytes32 flightKey
     )
         external
+        whenNotPaused
         isCallerAuthorized
         isAirlineParticipating(airline)
         flightExists(flightKey)
@@ -303,6 +314,7 @@ contract FlightSuretyData is Ownable, Pausable {
     function buyInsuranceForFlight(address passenger, bytes32 flightKey)
         external
         payable
+        whenNotPaused
         flightExists(flightKey)
     {
         passengersInsurances[flightKey][passenger] = msg.value;
@@ -313,6 +325,7 @@ contract FlightSuretyData is Ownable, Pausable {
 
     function passengerClaimsInsuredMoney(address passenger)
         external
+        whenNotPaused
         isCallerAuthorized
     {
         uint256 amount = passengersFunds[passenger];
@@ -337,6 +350,7 @@ contract FlightSuretyData is Ownable, Pausable {
         uint256 amountToPayout
     )
         external
+        whenNotPaused
         isCallerAuthorized
         flightExists(flightKey)
         flightInsured(passenger, flightKey)
