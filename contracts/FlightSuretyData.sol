@@ -29,16 +29,18 @@ contract FlightSuretyData is Ownable, Pausable {
         PARTICIPATING
     }
 
-    mapping(bytes32 => mapping(address => uint256)) passengersInsurances;
-    mapping(bytes32 => address[]) insuredFlights;
+    mapping(bytes32 => mapping(address => uint256))
+        private passengersInsurances;
+    mapping(bytes32 => address[]) private insuredFlights;
 
-    mapping(address => AirlineStatus) airlines;
-    mapping(address => uint256) airlinesFunds;
-    mapping(address => uint256) passengersFunds;
+    mapping(address => AirlineStatus) public airlines;
+    mapping(address => uint256) private airlinesFunds;
+    mapping(address => uint256) private passengersFunds;
 
-    mapping(address => address[]) approvals;
+    mapping(address => address[]) private approvals;
 
-    uint256 airlinesCount = 0;
+    uint256 public airlinesCount = 0;
+    uint256 public airlinesParticipating = 0;
 
     /********************************************************************************************/
     /*                                       EVENT DEFINITIONS                                  */
@@ -142,8 +144,12 @@ contract FlightSuretyData is Ownable, Pausable {
      ********** Airlines registration **********
      */
 
-    function getAirlinesCount() public view returns (uint256) {
+    function getAirlinesCount() external view returns (uint256) {
         return airlinesCount;
+    }
+
+    function getAirlinesParticipatingCount() external view returns (uint256) {
+        return airlinesParticipating;
     }
 
     function getAirlineStatus(address airline) external view returns (uint8) {
@@ -154,7 +160,7 @@ contract FlightSuretyData is Ownable, Pausable {
         external
         whenNotPaused
         isCallerAuthorized
-        isAirline(sender)
+        isAirlineParticipating(sender)
         returns (bool)
     {
         // airline has to be not registered yet.
@@ -181,7 +187,7 @@ contract FlightSuretyData is Ownable, Pausable {
         external
         whenNotPaused
         isCallerAuthorized
-        isAirline(approver)
+        isAirlineParticipating(approver)
     {
         approvals[airline].push(approver);
 
@@ -222,6 +228,8 @@ contract FlightSuretyData is Ownable, Pausable {
         isAirline(airline)
     {
         airlines[airline] = AirlineStatus.PARTICIPATING;
+        airlinesParticipating += 1;
+
         emit NewAirlineStatus(airline, AirlineStatus.PARTICIPATING);
     }
 

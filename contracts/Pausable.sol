@@ -17,7 +17,7 @@ contract Pausable is Ownable {
      * @dev Modifier to make a function callable only when the contract is not paused.
      */
     modifier whenNotPaused() {
-        require(!paused);
+        require(!paused, "Can't use contract as it's paused.");
         _;
     }
 

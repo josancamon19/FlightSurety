@@ -22,22 +22,12 @@ contract FlightSuretyApp is Ownable {
     uint8 private constant STATUS_CODE_LATE_TECHNICAL = 40;
     uint8 private constant STATUS_CODE_LATE_OTHER = 50;
 
-    IFlightSuretyDataInterface dataContract;
-
-    /********************************************************************************************/
-    /*                                       FUNCTION MODIFIERS                                 */
-    /********************************************************************************************/
-
-    event FlightStatusUpdate(bytes32 flight, uint8 statusCode);
+    IFlightSuretyDataInterface private dataContract;
 
     /********************************************************************************************/
     /*                                       CONSTRUCTOR                                        */
     /********************************************************************************************/
 
-    /**
-     * @dev Contract constructor
-     *
-     */
     constructor(address contractAddress) {
         dataContract = IFlightSuretyDataInterface(contractAddress);
     }
@@ -47,7 +37,7 @@ contract FlightSuretyApp is Ownable {
     /********************************************************************************************/
 
     function registerAirline(address airline) external returns (bool) {
-        uint256 airlinesCount = dataContract.getAirlinesCount();
+        uint256 airlinesCount = dataContract.getAirlinesParticipatingCount();
 
         if (airlinesCount < 4) {
             return dataContract.registerAirline(msg.sender, airline);
@@ -104,8 +94,7 @@ contract FlightSuretyApp is Ownable {
         string memory flight,
         uint256 timestamp,
         uint8 statusCode
-    ) internal {
-        // TODO: make it private
+    ) private {
         // oracles consensus was done from where this is being called.
         dataContract.setFlightStatusCode(
             airline,
@@ -379,6 +368,8 @@ interface IFlightSuretyDataInterface {
      */
 
     function getAirlinesCount() external view returns (uint256);
+
+    function getAirlinesParticipatingCount() external view returns (uint256);
 
     function getAirlineStatus(address airline) external view returns (uint8);
 
