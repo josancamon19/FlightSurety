@@ -5,39 +5,56 @@ import Web3 from 'web3';
 export default class Contract {
     constructor(network, callback) {
 
-        let config = Config[network];
-        this.web3 = new Web3(new Web3.providers.HttpProvider(config.url));
-        this.flightSuretyApp = new this.web3.eth.Contract(FlightSuretyApp.abi, config.appAddress);
+        this.config = Config[network];
         this.initialize(callback);
+
         this.owner = null;
         this.airlines = [];
         this.passengers = [];
     }
 
-    initialize(callback) {
-        this.web3.eth.getAccounts((error, accts) => {
-           
-            this.owner = accts[0];
-
-            let counter = 1;
-            
-            while(this.airlines.length < 5) {
-                this.airlines.push(accts[counter++]);
+    async initialize(callback) {
+        if (window.ethereum) {
+            this.web3 = window.ethereum;
+            try {
+                // Request account access
+                await window.ethereum.enable();
+            } catch (error) {
+                // User denied account access...
+                console.error("User denied account access")
             }
+        }
+        // Legacy dapp browsers...
+        else if (window.web3) {
+            this.web3 = window.web3.currentProvider;
+        }
+        // If no injected web3 instance is detected, fall back to Ganache
+        else {
+            this.web3 = new Web3.providers.HttpProvider('http://localhost:7545');
+        }
+        this.web3 = new Web3(this.web3);
 
-            while(this.passengers.length < 5) {
-                this.passengers.push(accts[counter++]);
-            }
-
-            callback();
-        });
+        this.flightSuretyApp = new this.web3.eth.Contract(FlightSuretyApp.abi, this.config.appAddress);
+        this.getAccounts();
+        callback();
     }
 
-    isOperational(callback) {
-       let self = this;
-       self.flightSuretyApp.methods
-            .isOperational()
-            .call({ from: self.owner}, callback);
+    getAccounts() {
+
+        let self = this;
+        // Retrieving accounts
+        self.web3.eth.getAccounts(function (err, res) {
+            if (err) {
+                console.log('Error:', err);
+                return;
+            }
+            self.owner = res[0];
+        })
+    }
+
+    async isPaused(callback) {
+        let self = this;
+        let isPaused = await self.flightSuretyApp.methods.isPaused().call(callback);
     }
 
     fetchFlightStatus(flight, callback) {
@@ -46,10 +63,12 @@ export default class Contract {
             airline: self.airlines[0],
             flight: flight,
             timestamp: Math.floor(Date.now() / 1000)
-        } 
+        }
         self.flightSuretyApp.methods
             .fetchFlightStatus(payload.airline, payload.flight, payload.timestamp)
-            .send({ from: self.owner}, (error, result) => {
+            .send({
+                from: self.owner
+            }, (error, result) => {
                 callback(error, payload);
             });
     }

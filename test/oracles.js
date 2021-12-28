@@ -113,9 +113,6 @@ contract('Oracles', async (accounts) => {
 
     it('Oracles can submit AIRLINE_ON_TIME responses', async () => {
 
-        // TODO: 
-        // - Js timestamp in milliseconds?
-
         await oraclesSubmission(accounts[1], config.flights[0], STATUS_CODE_ON_TIME);
         let details = await config.flightSuretyData.getFlightDetails(accounts[1], config.flights[0].flight, config.flights[0].timestamp);
         assert.equal(details.statusCode.toNumber(), STATUS_CODE_ON_TIME, "Flight status is not correct")
