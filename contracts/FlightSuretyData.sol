@@ -274,6 +274,15 @@ contract FlightSuretyData is Ownable, Pausable {
         emit FlightStatusCodeFound(airline, flightKey, newStatusCode);
     }
 
+    function getFlightDetails(
+        address airline,
+        string memory flight,
+        uint256 timestamp
+    ) external view returns (bool isRegistered, uint8 statusCode) {
+        bytes32 flightKey = getFlightKey(airline, flight, timestamp);
+        return (flights[flightKey].isRegistered, flights[flightKey].statusCode);
+    }
+
     /**
      ********** Passengers operations **********
      */

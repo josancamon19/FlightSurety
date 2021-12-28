@@ -183,8 +183,6 @@ contract('Flight Surety Tests', async (accounts) => {
         let status5_2 = await config.flightSuretyData.getAirlineStatus(airline5);
 
         assert.equal(status5_2, 1, "Airline 5 registration consensus not working.");
-
-
     });
 
     it('(airline) can register a flight using registerFlight()', async () => {

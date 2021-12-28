@@ -93,7 +93,8 @@ contract FlightSuretyApp is Ownable {
         address airline,
         string memory flight,
         uint256 timestamp,
-        uint8 statusCode
+        uint8 statusCode,
+        bytes32 oracleRequestKey
     ) private {
         // oracles consensus was done from where this is being called.
         dataContract.setFlightStatusCode(
@@ -111,15 +112,17 @@ contract FlightSuretyApp is Ownable {
                 insurePassenger(passengers[i], airline, flightKey);
             }
             dataContract.cleanAllInsuredPassengersForFlight(flightKey);
+            closeOracleRequest(oracleRequestKey);
         } else {
-            if (block.timestamp >= timestamp) {
-                dataContract.transferToAirlinePassengersInsuredFundsForFlight(
-                    airline,
-                    flightKey
-                );
+            // if (block.timestamp >= timestamp) {
+            dataContract.transferToAirlinePassengersInsuredFundsForFlight(
+                airline,
+                flightKey
+            );
 
-                dataContract.cleanAllInsuredPassengersForFlight(flightKey);
-            }
+            dataContract.cleanAllInsuredPassengersForFlight(flightKey);
+            closeOracleRequest(oracleRequestKey);
+            // }
         }
     }
 
@@ -167,8 +170,8 @@ contract FlightSuretyApp is Ownable {
         );
     }
 
-    function passengerClaimsInsuredMoney(address passenger) external {
-        dataContract.passengerClaimsInsuredMoney(passenger);
+    function passengerClaimsInsuredMoney() external {
+        dataContract.passengerClaimsInsuredMoney(msg.sender);
     }
 
     /********************************************************************************************/
@@ -195,6 +198,11 @@ contract FlightSuretyApp is Ownable {
         emit OracleRequest(index, airline, flight, timestamp);
     }
 
+    function closeOracleRequest(bytes32 oracleRequestKey) private {
+        oracleResponses[oracleRequestKey].isOpen = false;
+        emit OracleRequestClosed(oracleRequestKey);
+    }
+
     // Incremented to add pseudo-randomness at various points
     uint8 private nonce = 0;
 
@@ -202,7 +210,7 @@ contract FlightSuretyApp is Ownable {
     uint256 public constant REGISTRATION_FEE = 1 ether;
 
     // Number of oracles that must respond for valid status
-    uint256 private constant MIN_RESPONSES = 3;
+    uint256 private constant MIN_RESPONSES = 2;
 
     struct Oracle {
         bool isRegistered;
@@ -250,6 +258,8 @@ contract FlightSuretyApp is Ownable {
         uint256 timestamp
     );
 
+    event OracleRequestClosed(bytes32 oracleRequestKey);
+
     // Register an oracle with the contract
     function registerOracle() external payable {
         // Require registration fee
@@ -290,10 +300,9 @@ contract FlightSuretyApp is Ownable {
         bytes32 key = keccak256(
             abi.encodePacked(index, airline, flight, timestamp)
         );
-        require(
-            oracleResponses[key].isOpen,
-            "Flight or timestamp do not match oracle request"
-        );
+        require(oracleResponses[key].isOpen, "Oracle submissions needed completed. Request is closed. | Or does not exists.");
+
+        // TODO: how is msg.sender not duplicated?
 
         oracleResponses[key].responses[statusCode].push(msg.sender);
 
@@ -306,7 +315,7 @@ contract FlightSuretyApp is Ownable {
             emit FlightStatusInfo(airline, flight, timestamp, statusCode);
 
             // Handle flight status as appropriate
-            processFlightStatus(airline, flight, timestamp, statusCode);
+            processFlightStatus(airline, flight, timestamp, statusCode, key);
         }
     }
 

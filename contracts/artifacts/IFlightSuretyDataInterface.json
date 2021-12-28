@@ -57,6 +57,7 @@
 			"getAirlineFunds(address)": "9e4a8f8f",
 			"getAirlineStatus(address)": "57721fee",
 			"getAirlinesCount()": "05e931f4",
+			"getAirlinesParticipatingCount()": "3ad7ba16",
 			"getPassengerInsuranceForFlight(address,bytes32)": "526a4631",
 			"getPassengersInsuredForFlight(bytes32)": "954afc8f",
 			"isFlightRegistered(bytes32)": "58ac36a3",
@@ -198,6 +199,19 @@
 		{
 			"inputs": [],
 			"name": "getAirlinesCount",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"name": "getAirlinesParticipatingCount",
 			"outputs": [
 				{
 					"internalType": "uint256",
