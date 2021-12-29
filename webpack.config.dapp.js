@@ -35,6 +35,14 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: path.join(__dirname, "src/dapp/index.html")
     }),
+    new HtmlWebpackPlugin({ // Also generate a test.html
+      filename: 'airlines.html',
+      template: 'src/dapp/airlines.html'
+    }),
+    new HtmlWebpackPlugin({ // Also generate a test.html
+      filename: 'passengers.html',
+      template: 'src/dapp/passengers.html'
+    }),
     new webpack.ProvidePlugin({
       Buffer: ['buffer', 'Buffer'],
     }),
