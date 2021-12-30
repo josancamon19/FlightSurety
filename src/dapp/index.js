@@ -5,9 +5,11 @@ import './flightsurety.css';
 
 (async () => {
 
-    let result = null;
-
     let contract = new Contract('localhost', () => {
+
+        // FIX 
+        // - Bugs and TODos then start working on the oracles thing.
+        // - Then youll figure out what's going on with the showing things
 
         if (window.location.pathname == '/') {
             DOM.elid('go-airlines').addEventListener('click', () => {
@@ -23,10 +25,15 @@ import './flightsurety.css';
             setupSharedOperations();
             setupPassengerPage();
         }
+
         // FIX: BUG can register flight if airlinesCount is 0 
     });
 
     function setupSharedOperations() {
+        contract.listenEvents((content) => {
+            DOM.elid('events').innerHTML += `<div class="alert alert-success" role="alert">${content}</div>`;
+        });
+
         DOM.elid('btn-get-flight-details').addEventListener('click', () => {
             let flight = DOM.elid('details-flight-number').value;
             let time = DOM.elid('details-flight-time').value;
@@ -36,7 +43,10 @@ import './flightsurety.css';
                 time = time / 1000;
             }
             contract.getFlightDetails(airline, flight, time, (err, res) => {
-                console.log(`Flight Details:\nRegistered: ${res.isRegistered}\nStatus: ${res.statusCode}`);
+                let text;
+                if (err == null) {
+                    text = `Flight Details:\nRegistered: ${res.isRegistered}\nStatus: ${res.statusCode}`;
+                }
             });
         });
         DOM.elid('btn-request-flight-status-update').addEventListener('click', () => {
@@ -48,33 +58,25 @@ import './flightsurety.css';
                 time = time / 1000;
             }
             contract.fetchFlightStatus(airline, flight, time, (err, res) => {
-                console.log(res);
             });
         });
     }
 
     function setupAirlinePage() {
-        contract.loadAirlineStatus();
-        DOM.elid('btn-get-flight-details').addEventListener('click', () => {
-            let flight = DOM.elid('details-flight-number').value;
-            let time = DOM.elid('details-flight-time').value;
-            let airline = DOM.elid('details-flight-airline').value;
-            if (time != null) {
-                // FIX check tests js time is in millis and sol in secs
-                time = Date.parse(time);
-                time = time / 1000;
-            }
-            contract.getFlightDetails(airline, flight, time, (err, res) => {
-                console.log(`Flight Details:\nRegistered: ${res.isRegistered}\n Status: ${res.statusCode}`);
-            });
-        });
+
         DOM.elid('btn-register-airline').addEventListener('click', () => {
             let airline = DOM.elid('register-airline-address').value;
-            contract.registerAirline(airline, (err, res) => {});
+            contract.registerAirline(airline, (err, res) => {
+                showAlert(err, res, (_) => `Operation was successful, we will let you know`);
+            });
         });
         DOM.elid('btn-deposit-funds').addEventListener('click', () => {
             let amount = DOM.elid('deposit-amount').value;
-            contract.airlineDeposit(amount, (err, res) => {});
+            console.log($('#exampleModalCenter'));
+            $('#exampleModalCenter').modal({
+                show: true
+            })
+            // contract.airlineDeposit(amount, (err, res) => {});
         });
         DOM.elid('btn-register-flight').addEventListener('click', () => {
             let flight = DOM.elid('register-flight-number').value;
@@ -88,7 +90,7 @@ import './flightsurety.css';
             });
         });
     }
-
+    //0xfC2dAa204fBcbc79E1C567aa6c8AB370d7D58C28
 
     function setupPassengerPage() {
         DOM.elid('btn-buy-insurance').addEventListener('click', () => {
@@ -100,12 +102,27 @@ import './flightsurety.css';
                 time = time / 1000;
             }
             let amount = DOM.elid('buy-insurance-amount').value;
-            contract.buyInsurance(airline, flight, time, amount, (err, res) => {});
+            contract.buyInsurance(airline, flight, time, amount, (err, res) => {
+                console.log(err);
+                console.log(res);
+            });
         });
 
         DOM.elid('btn-claim-insured-funds').addEventListener('click', () => {
             contract.claimInsuredMoney((err, res) => {});
         });
+    }
+
+    function showAlert(err, text) {
+        if (text == null) {
+            text = "Operation was successful, we will let you know";
+        }
+        if (err != null) {
+            alert(err);
+        } else {
+            console.log(text);
+            alert(text);
+        }
     }
 })();
 
