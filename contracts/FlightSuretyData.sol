@@ -103,12 +103,10 @@ contract FlightSuretyData is Ownable, Pausable {
     }
 
     modifier isAirlineParticipating(address airline) {
-        if (airlinesCount != 0) {
-            require(
-                airlines[airline] == AirlineStatus.PARTICIPATING,
-                "Airline is not yet ready to participate into the contract."
-            );
-        }
+        require(
+            airlines[airline] == AirlineStatus.PARTICIPATING,
+            "Airline is not yet ready to participate into the contract."
+        );
         _;
     }
 
@@ -160,9 +158,15 @@ contract FlightSuretyData is Ownable, Pausable {
         external
         whenNotPaused
         isCallerAuthorized
-        isAirlineParticipating(sender)
         returns (bool)
     {
+         if (airlinesCount != 0) {
+            require(
+                airlines[sender] == AirlineStatus.PARTICIPATING,
+                "Airline is not yet ready to participate into the contract."
+            );
+        }
+
         // airline has to be not registered yet.
         require(
             airlines[newAirline] == AirlineStatus.NOT_APPROVED,

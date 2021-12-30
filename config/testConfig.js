@@ -20,7 +20,7 @@ var Config = async function (accounts) {
     const buildFlight = () => {
         return {
             flight: "UX" + (Math.round(Math.random() * 101)).toString(),
-            timestamp: Date.now() + (Math.round(Math.random() * 10000)),
+            timestamp: (Math.round(Date.now() / 1000)) + (Math.round(Math.random() * 10000)),
             airline: null
         };
     };

@@ -73,7 +73,10 @@ contract FlightSuretyApp is Ownable, Pausable {
     }
 
     function registerFlight(string memory flight, uint256 timestamp) external {
-        // require(block.timestamp < timestamp, "Flight timestamp is not a future time.");
+        require(
+            block.timestamp < timestamp,
+            "Flight timestamp is not a future time."
+        );
 
         address airline = msg.sender;
         require(

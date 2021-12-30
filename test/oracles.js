@@ -3,7 +3,7 @@ var BigNumber = require('bignumber.js');
 
 contract('Oracles', async (accounts) => {
 
-    const TEST_ORACLES_COUNT = 10;
+    const TEST_ORACLES_COUNT = 20;
     var config;
     var oracleIndex;
 

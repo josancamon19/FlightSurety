@@ -10,8 +10,6 @@ export default class Contract {
         this.account = null;
 
         this.initialize(callback);
-
-        // TODO: Feedback when submitted?
     }
 
     async initialize(callback) {
@@ -49,7 +47,6 @@ export default class Contract {
     }
 
     async listenEvents(callback) {
-        // TODO: listen for Oracle requests?
         let self = this;
         this.flightSuretyData.events.NewAirlineStatus().on('data', function (event) {
             let data = event.returnValues;

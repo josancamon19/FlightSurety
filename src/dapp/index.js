@@ -7,10 +7,6 @@ import './flightsurety.css';
 
     let contract = new Contract('localhost', () => {
 
-        // FIX 
-        // - Bugs and TODos then start working on the oracles thing.
-        // - Then youll figure out what's going on with the showing things
-
         if (window.location.pathname == '/') {
             DOM.elid('go-airlines').addEventListener('click', () => {
                 window.location.href = 'airlines.html';
@@ -25,8 +21,6 @@ import './flightsurety.css';
             setupSharedOperations();
             setupPassengerPage();
         }
-
-        // FIX: BUG can register flight if airlinesCount is 0 
     });
 
     function setupSharedOperations() {
@@ -47,6 +41,7 @@ import './flightsurety.css';
                 if (err == null) {
                     text = `Flight Details:\nRegistered: ${res.isRegistered}\nStatus: ${res.statusCode}`;
                 }
+                console.log(text);
             });
         });
         DOM.elid('btn-request-flight-status-update').addEventListener('click', () => {
@@ -57,8 +52,7 @@ import './flightsurety.css';
                 time = Date.parse(time);
                 time = time / 1000;
             }
-            contract.fetchFlightStatus(airline, flight, time, (err, res) => {
-            });
+            contract.fetchFlightStatus(airline, flight, time, (err, res) => {});
         });
     }
 
@@ -66,17 +60,11 @@ import './flightsurety.css';
 
         DOM.elid('btn-register-airline').addEventListener('click', () => {
             let airline = DOM.elid('register-airline-address').value;
-            contract.registerAirline(airline, (err, res) => {
-                showAlert(err, res, (_) => `Operation was successful, we will let you know`);
-            });
+            contract.registerAirline(airline, (err, res) => {});
         });
         DOM.elid('btn-deposit-funds').addEventListener('click', () => {
             let amount = DOM.elid('deposit-amount').value;
-            console.log($('#exampleModalCenter'));
-            $('#exampleModalCenter').modal({
-                show: true
-            })
-            // contract.airlineDeposit(amount, (err, res) => {});
+            contract.airlineDeposit(amount, (err, res) => {});
         });
         DOM.elid('btn-register-flight').addEventListener('click', () => {
             let flight = DOM.elid('register-flight-number').value;
@@ -90,8 +78,6 @@ import './flightsurety.css';
             });
         });
     }
-    //0xfC2dAa204fBcbc79E1C567aa6c8AB370d7D58C28
-
     function setupPassengerPage() {
         DOM.elid('btn-buy-insurance').addEventListener('click', () => {
             let flight = DOM.elid('buy-insurance-flight-number').value;
@@ -113,36 +99,4 @@ import './flightsurety.css';
         });
     }
 
-    function showAlert(err, text) {
-        if (text == null) {
-            text = "Operation was successful, we will let you know";
-        }
-        if (err != null) {
-            alert(err);
-        } else {
-            console.log(text);
-            alert(text);
-        }
-    }
 })();
-
-function display(title, description, results) {
-    let displayDiv = DOM.elid("display-wrapper");
-    let section = DOM.section();
-    section.appendChild(DOM.h2(title));
-    section.appendChild(DOM.h5(description));
-    results.map((result) => {
-        let row = section.appendChild(DOM.div({
-            className: 'row'
-        }));
-        row.appendChild(DOM.div({
-            className: 'col-sm-4 field'
-        }, result.label));
-        row.appendChild(DOM.div({
-            className: 'col-sm-8 field-value'
-        }, result.error ? String(result.error) : String(result.value)));
-        section.appendChild(row);
-    })
-    displayDiv.append(section);
-
-}
