@@ -9,7 +9,6 @@ import "./Pausable.sol";
 /* FlightSurety Smart Contract                      */
 /************************************************** */
 contract FlightSuretyApp is Ownable, Pausable {
-    // TODO: use whenPaused
     using SafeMath for uint256; // Allow SafeMath functions to be called for all uint256 types (similar to "prototype" in Javascript)
 
     /********************************************************************************************/
@@ -38,7 +37,11 @@ contract FlightSuretyApp is Ownable, Pausable {
     /*                                     SMART CONTRACT FUNCTIONS                             */
     /********************************************************************************************/
 
-    function registerAirline(address airline) external returns (bool) {
+    function registerAirline(address airline)
+        external
+        whenNotPaused
+        returns (bool)
+    {
         uint256 airlinesCount = dataContract.getAirlinesParticipatingCount();
 
         if (airlinesCount < 4) {
@@ -62,7 +65,7 @@ contract FlightSuretyApp is Ownable, Pausable {
         return false;
     }
 
-    function airlineDepositsFunds() external payable {
+    function airlineDepositsFunds() external payable whenNotPaused {
         dataContract.depositFundsToAirline{value: msg.value}(msg.sender);
         if (
             dataContract.getAirlineStatus(msg.sender) != 2 &&
@@ -72,7 +75,10 @@ contract FlightSuretyApp is Ownable, Pausable {
         }
     }
 
-    function registerFlight(string memory flight, uint256 timestamp) external {
+    function registerFlight(string memory flight, uint256 timestamp)
+        external
+        whenNotPaused
+    {
         require(
             block.timestamp < timestamp,
             "Flight timestamp is not a future time."
@@ -119,8 +125,8 @@ contract FlightSuretyApp is Ownable, Pausable {
             dataContract.cleanAllInsuredPassengersForFlight(flightKey);
             closeOracleRequest(oracleRequestKey);
         } else {
-            // TODO validate now > flight timestamp as it's not guaranteed the airline is on time until the flight started.
-            // -> if this is uncommented 1 of the oracles test fails :C
+            // validate now > flight timestamp as it's not guaranteed the airline is on time until the flight started.
+            // BUT IT COMPLICATES TESTING
 
             // if (block.timestamp >= timestamp) {
             dataContract.transferToAirlinePassengersInsuredFundsForFlight(
@@ -269,7 +275,7 @@ contract FlightSuretyApp is Ownable, Pausable {
     event OracleRequestClosed(bytes32 oracleRequestKey);
 
     // Register an oracle with the contract
-    function registerOracle() external payable {
+    function registerOracle() external payable whenNotPaused {
         // Require registration fee
         require(msg.value >= REGISTRATION_FEE, "Registration fee is required");
 
@@ -297,7 +303,7 @@ contract FlightSuretyApp is Ownable, Pausable {
         string memory flight,
         uint256 timestamp,
         uint8 statusCode
-    ) external {
+    ) external whenNotPaused {
         require(
             (oracles[msg.sender].indexes[0] == index) ||
                 (oracles[msg.sender].indexes[1] == index) ||
@@ -313,7 +319,7 @@ contract FlightSuretyApp is Ownable, Pausable {
             "Oracle submissions needed completed. Request is closed. | Or does not exists."
         );
 
-        // TODO: how is msg.sender not duplicated?
+        // TODO: how is msg.sender not repeating to bias the response?
 
         oracleResponses[key].responses[statusCode].push(msg.sender);
 
@@ -334,13 +340,13 @@ contract FlightSuretyApp is Ownable, Pausable {
         address airline,
         string memory flight,
         uint256 timestamp
-    ) internal pure returns (bytes32) {
+    ) private pure returns (bytes32) {
         return keccak256(abi.encodePacked(airline, flight, timestamp));
     }
 
     // Returns array of three non-duplicating integers from 0-9
     function generateIndexes(address account)
-        internal
+        private
         returns (uint8[3] memory)
     {
         uint8[3] memory indexes;
@@ -360,7 +366,7 @@ contract FlightSuretyApp is Ownable, Pausable {
     }
 
     // Returns array of three non-duplicating integers from 0-9
-    function getRandomIndex(address account) internal returns (uint8) {
+    function getRandomIndex(address account) private returns (uint8) {
         uint8 maxValue = 10;
 
         // Pseudo random number...the incrementing nonce adds variation

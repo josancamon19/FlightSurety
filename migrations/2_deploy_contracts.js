@@ -2,7 +2,7 @@ const FlightSuretyApp = artifacts.require("FlightSuretyApp");
 const FlightSuretyData = artifacts.require("FlightSuretyData");
 const fs = require('fs');
 
-module.exports = async function (deployer) {
+module.exports = async function (deployer, netework, accounts) {
 
     await deployer.deploy(FlightSuretyData);
     await deployer.deploy(FlightSuretyApp, FlightSuretyData.address);
@@ -11,10 +11,8 @@ module.exports = async function (deployer) {
     const instance = await FlightSuretyData.deployed();
     await instance.authorizeContract(FlightSuretyApp.address);
 
-    // if (deployer.network === 'development') {
-    //     const appInstance = await FlightSuretyApp.deployed();
-    //     appInstance.registerAirline();
-    // }
+    const appInstance = await FlightSuretyApp.deployed();
+    await appInstance.registerAirline(accounts[0]);
 
     let config = {
         localhost: {
