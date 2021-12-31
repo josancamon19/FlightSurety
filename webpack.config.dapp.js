@@ -49,6 +49,7 @@ module.exports = {
     new webpack.ProvidePlugin({
       process: 'process/browser',
     }),
+
   ],
   resolve: {
     extensions: [".js"],

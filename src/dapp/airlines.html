@@ -12,65 +12,75 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light p-4">
         <a class="navbar-brand" href="#">Airlines</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
-            aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
     </nav>
-    <div>
 
-        <div class="container">
-          
-            <div id="events">
-
-            </div>
-
-            <div class="row">
-                <h3>Get Flight details</h3>
-                <input type="text" class="form-control mt-2" placeholder="Airline" id="details-flight-airline">
-                <input type="text" class="form-control mt-2" placeholder="Flight number" id="details-flight-number">
-                <input type="datetime-local" class="form-control mt-2 mb-3" placeholder="Departure time"
-                    id="details-flight-time">
-                <btn class="btn btn-primary btn-lg" id="btn-get-flight-details">Get Flight Details</btn>
-            </div>
-
-            <div class="row mt-4">
-                <h3>Register airline</h3>
-                <input type="text" class="form-control mt-2 mb-3" placeholder="Airline" id="register-airline-address">
-                <btn class="btn btn-primary btn-lg" id="btn-register-airline">Register</btn>
-            </div>
-
-            <div class="row mt-4">
-                <h3>Deposit funds</h3>
-                <input type="number" class="form-control mt-2 mb-3" placeholder="Amount to deposit" id="deposit-amount">
-                <btn class="btn btn-primary btn-lg" id="btn-deposit-funds">Deposit</btn>
-            </div>
-
-            <div class="row mt-4">
-                <h3>Register Flight</h3>
-                <input type="text" class="form-control mt-2" placeholder="Flight number" id="register-flight-number">
-                <input type="datetime-local" class="form-control mt-2 mb-3" placeholder="Departure time"
-                    id="register-flight-time">
-                <btn class="btn btn-primary btn-lg" id="btn-register-flight">Register</btn>
-            </div>
-
-            <div class="row mt-4">
-                <h3 class="col-12">Status update</h3><br>
-                <input type="text" class="form-control mt-2" placeholder="Airline" id="status-update-airline" value="0xfC2dAa204fBcbc79E1C567aa6c8AB370d7D58C28">
-                <input type="text" class="form-control mt-2" placeholder="Flight number" id="status-update-number" value="UX10">
-                <input type="datetime-local" class="form-control mt-2 mb-3" placeholder="Departure time"
-                    id="status-update-time">
-                <btn class="btn btn-primary btn-lg mt-2" id="btn-request-flight-status-update">Request Flight Status
-                    Update
-                </btn>
+    <div class="modal fade" id="modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modal-title">Modal title</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Ok</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
-        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <div class="container operations">
+
+        <div id="events">
+
+        </div>
+
+        <div class="row">
+            <h3>Get Flight details</h3>
+            <input type="text" class="form-control mt-2" placeholder="Airline" id="details-flight-airline" value="0xF391B4F9b5a26950EeA6E397C932a090bd21fD95">
+            <input type="text" class="form-control mt-2" placeholder="Flight number" id="details-flight-number" value="UX10">
+            <input type="datetime-local" class="form-control mt-2 mb-3" placeholder="Departure time"
+                id="details-flight-time">
+            <btn class="btn btn-primary btn-lg" id="btn-get-flight-details">Get Flight Details</btn>
+        </div>
+
+        <div class="row mt-4">
+            <h3>Register airline</h3>
+            <input type="text" class="form-control mt-2 mb-3" placeholder="Airline" id="register-airline-address">
+            <btn class="btn btn-primary btn-lg" id="btn-register-airline">Register</btn>
+        </div>
+
+        <div class="row mt-4">
+            <h3>Deposit funds</h3>
+            <input type="number" class="form-control mt-2 mb-3" placeholder="Amount to deposit" id="deposit-amount">
+            <btn class="btn btn-primary btn-lg" id="btn-deposit-funds">Deposit</btn>
+        </div>
+
+        <div class="row mt-4">
+            <h3>Register Flight</h3>
+            <input type="text" class="form-control mt-2" placeholder="Flight number" id="register-flight-number">
+            <input type="datetime-local" class="form-control mt-2 mb-3" placeholder="Departure time"
+                id="register-flight-time">
+            <btn class="btn btn-primary btn-lg" id="btn-register-flight">Register</btn>
+        </div>
+
+        <div class="row mt-4">
+            <h3 class="col-12">Status update</h3><br>
+            <input type="text" class="form-control mt-2" placeholder="Airline" id="status-update-airline"
+                value="0xfC2dAa204fBcbc79E1C567aa6c8AB370d7D58C28">
+            <input type="text" class="form-control mt-2" placeholder="Flight number" id="status-update-number"
+                value="UX10">
+            <input type="datetime-local" class="form-control mt-2 mb-3" placeholder="Departure time"
+                id="status-update-time">
+            <btn class="btn btn-primary btn-lg mt-2" id="btn-request-flight-status-update">Request Flight Status
+                Update
+            </btn>
+        </div>
+    </div>
+
 </body>
 
 </html>
